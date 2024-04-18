@@ -59,10 +59,11 @@ public class MainActivity extends AppCompatActivity {
             if (v instanceof Button) {
                 Button button = (Button) v;
                 String buttonText = button.getText().toString();
-                String currentText = binding.tvResult.getText().toString();
+                String currentText = binding.tvResult.getText().toString(); //hier wird der aktuell angezeigte Eingabe ausgelesen
                 List<String> orderedNumberList = Arrays.asList(currentText.split("[-+×÷]"));
                 String lastPart = orderedNumberList.get(orderedNumberList.size() - 1);
 
+                // Setze eine 0 voran, wenn ein Leerzeichen eingegeben wird.
                 if (currentText.isEmpty() && "+-×÷.".contains(buttonText)) {
                     binding.tvResult.setText("0");
                 }
@@ -70,10 +71,13 @@ public class MainActivity extends AppCompatActivity {
                 Pattern pattern = Pattern.compile(".$");
                 Matcher matcher = pattern.matcher(currentText);
 
+                // Überprüfe, ob das letzte Zeichen in der Liste enthalten ist und entferne es, wenn diese Bedingung erfüllt ist.
                 if (matcher.find() && "+-×÷.".contains(matcher.group()) && "+-×÷.".contains(buttonText)) {
                     binding.tvResult.setText(currentText.substring(0, currentText.length() - 1));
                 }
 
+                // Wenn das eingegebene Zeichen ein Punkt ist und wenn die eingegebene Zahl schon einen Punkt hat,
+                // wird die Eingabe verworfen. Wenn es nicht zutrifft, wird ein Punkt eingegeben.
                 if (buttonText.equals(".")) {
                     if (!lastPart.contains(".")) {
                         binding.tvResult.append(buttonText);
@@ -86,18 +90,18 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private final View.OnClickListener handleClickResult = v -> {
-        if (v.getId() != binding.buttonEqual.getId()) {
+        if (v.getId() != binding.buttonEqual.getId()) {     // Überprüfe, ob der betätigte Button nicht der Gleichheits-Button ist.
+            return;                                         // Wenn nicht, wird die Methode beendet.
+        }
+        String text = binding.tvResult.getText().toString(); // Textausgabe auslesen.
+        if (text.isEmpty()) {                                // wenn leer, wird die Methode beendet
             return;
         }
-        String text = binding.tvResult.getText().toString();
-        if (text.isEmpty()) {
-            return;
-        }
-        try {
+        try {                                               // Versuche, das erste Zeichen des Textes in eine Zahl umzuwandeln.
             char firstCharacter = text.charAt(0);
             Integer.parseInt(String.valueOf(firstCharacter));
-        } catch (Exception e) {
-            binding.tvResult.setText("ERROR");
+        } catch (Exception e) {                             // Wenn eine Ausnahme auftritt (d. h. das erste Zeichen ist keine Zahl),
+            binding.tvResult.setText("ERROR");              //  wird "ERROR" im Resultatfeld angezeigt und die Methode beendet.
             return;
         }
 
@@ -160,20 +164,24 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+    // Wenn ein Fehler aufgetreten ist, wird "ERROR" angezeigt.
+    // Andernfalls wird das Ergebnis formatiert und im Ergebnisfeld angezeigt, wobei Kommas durch Punkte ersetzt werden.
         if (error) {
             binding.tvResult.setText("ERROR");
         } else {
-            String stringEndResult = String.valueOf(Formatter(endResult));
+            String stringEndResult = Formatter(endResult);
             binding.tvResult.setText(stringEndResult.replace(',', '.'));
         }
     };
 
+    // Löscht den Inhalt der Ausgabe, wenn die Lösch-Schaltfläche geklickt wird.
     private final View.OnClickListener handleClickClear = v -> {
         if (v.getId() == binding.buttonClear.getId()) {
             binding.tvResult.setText("");
         }
     };
 
+    //Begrenzt die Formatierung der Zahlen auf höchstens 2 Nachkommastellen.
     private String Formatter(float value) {
         DecimalFormat formatter = new DecimalFormat("0.##");
         return formatter.format(value);
