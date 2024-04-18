@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-
     private final View.OnClickListener handleClickResult = v -> {
         if (v.getId() != binding.buttonEqual.getId()) {
             return;
