@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             if (v instanceof Button) {
                 Button button = (Button) v;
                 int buttonText = button.getText().toString();
-                float currentText = binding.tvResult.getText().toString(); //hier wird der aktuell angezeigte Eingabe ausgelesen
+                double currentText = binding.tvResult.getText().toString(); //hier wird der aktuell angezeigte Eingabe ausgelesen
                 List<String> orderedNumberList = Arrays.asList(currentText.split("[-+\u00F7\u00D7]"));
                 String lastPart = orderedNumberList.get(orderedNumberList.size() - 1);
 
@@ -106,7 +106,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Aufsplitten des Textes ab Rechenzeichen
-        List<Float> orderedNumberList = Arrays.stream(text.split("[-+\u00F7\u00D7]")).map(Float::parseFloat).collect(Collectors.toList());
+        List<Float> orderedNumberList = new ArrayList<>();
+        String[] parts = text.split("[-+×÷]");
+        for (String part : parts) {
+            try {
+                float number = Float.parseFloat(part);
+                orderedNumberList.add(number);
+            } catch (NumberFormatException e) {
+// Handle parsing errors if needed
+            }
+        }
         List<Character> orderedOperatorList = new ArrayList<>();
 
         //String Rechenzeile wird in ein Array umgewandelt und durch iteriert, wobei Rechenzeichen in der Reihenfolge in die Liste orderedOperatorList hinzugefügt werden
@@ -138,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                     iterator.remove();
                     break;
                 // Division
-                case '\u002D':
+                case '\u00D2':
                     if (secondOperand == 0) {
                         error = true;
                     } else {
